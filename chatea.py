@@ -4,13 +4,13 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.pydantic_v1 import BaseModel
 from langchain_core.runnables import RunnableParallel, RunnablePassthrough
 from langchain_community.vectorstores import Chroma
-from langchain_community.document_loaders import PyPDFLoader
+from langchain_community.document_loaders import PyPDFLoader, CSVLoader
 from langchain_openai import OpenAIEmbeddings
 #from langchain_community.embeddings import OpenAIEmbeddings
 from langchain_together import Together
 #from langchain_community.llms import Together
 
-loader = PyPDFLoader("./2401.04088.pdf")
+loader = CSVLoader("./datasets/tea.csv") #PyPDFLoader("./2401.04088.pdf")
 data = loader.load()
 
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=2000, chunk_overlap=0)
@@ -56,5 +56,5 @@ chain = (
     | StrOutputParser()
 )
 
-response = chain.invoke("What are the Architectural details of Mixtral?")
+response = chain.invoke("有什么降火的茶吗?")
 print(response)
