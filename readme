@@ -1,0 +1,3 @@
+together files check hackathon_xingyuanlin_all_data.jsonl 
+together files upload hackathon_xingyuanlin_all_data.jsonl
+together finetune create --training-file file-0785c9aa-3bbd-449a-ae14-d2a488c46a8a --model mistralai/Mistral-7B-Instruct-v0.2 --wandb-api-key  bcff27d2e0c836fb5037d32e8f7f278a4d2ea6b2 -ne 20
