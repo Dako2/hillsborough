@@ -9,6 +9,7 @@ from langchain_openai import OpenAIEmbeddings
 #from langchain_community.embeddings import OpenAIEmbeddings
 from langchain_together import Together
 #from langchain_community.llms import Together
+from langchain_together.embeddings import TogetherEmbeddings
 
 loader = CSVLoader("./datasets/tea.csv") #PyPDFLoader("./2401.04088.pdf")
 data = loader.load()
@@ -18,18 +19,16 @@ all_splits = text_splitter.split_documents(data)
 
 # Add to vectorDB
 
-"""
-from langchain_together.embeddings import TogetherEmbeddings
+
 embeddings = TogetherEmbeddings(model="togethercomputer/m2-bert-80M-8k-retrieval")
-"""
+
 vectorstore = Chroma.from_documents(
     documents=all_splits,
     collection_name="rag-chroma",
-    embedding=OpenAIEmbeddings(),
+    embedding=TogetherEmbeddings(model="togethercomputer/m2-bert-80M-8k-retrieval"),
 )
 
 retriever = vectorstore.as_retriever()
-
 
 # RAG prompt
 template = """Answer the question based only on the following context:
