@@ -1,3 +1,5 @@
+import tkinter as tk
+import random
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
@@ -82,23 +84,19 @@ chain = (
     | StrOutputParser()
 )
 
-while True:
 
+client = openai.OpenAI(
+    api_key="2dd676e4528ce88cd7e66bd036e2d74d98d51ed4f4c3f5463e885d33e88fb5ba",
+    base_url="https://api.together.xyz/v1",
+    )
+
+def generate_output():
+    input_string = input_entry.get()
 
     system_content = "You are a traidtional Chinese medicine doctor. you analyze the patient's symptoms and recommend a treatement and a herbal tea"
-    user_content = "最近我老是贪睡得病感冒，有什么茶推荐吗？"
-    # wirte a python code to get input from user
-    user_content = input("Please enter your question: ")
-    if not user_content:
-        user_content = "最近我老是贪睡得病感冒，有什么茶推荐吗？"
+    user_content = input_string #"最近我老是贪睡得病感冒，有什么茶推荐吗？"
 
     response = chain.invoke(user_content)
-
-
-    client = openai.OpenAI(
-        api_key="2dd676e4528ce88cd7e66bd036e2d74d98d51ed4f4c3f5463e885d33e88fb5ba",
-        base_url="https://api.together.xyz/v1",
-        )
 
     # Base model 
     stream = client.chat.completions.create(
@@ -111,7 +109,7 @@ while True:
         max_tokens=1024,
         stop=['</s>']
     )
-    print("\n----Base model only----\n")
+    print("----Base model only----\n")
     str0 = stream.choices[0].message.content
     print(str0)
     #for chunk in stream:
@@ -128,12 +126,34 @@ while True:
         max_tokens=1024,
         stop=['</s>']
     )
-    print("\n----Finetuned model only----\n")
+    print("----Finetuned model only----\n")
 
     str1 = stream.choices[0].message.content
     print(str1)
     #for chunk in stream:
     #    print(chunk.choices[0].delta.content or "", end="", flush=True)
 
-    print("\n----Finetuned model with RAG----\n")
+    print("----Finetuned model with RAG----\n")
     print(response)
+
+    output_string1 = str0
+    output_string2 = str1
+    output_string3 = response
+    output_label.config(text=f"{output_string1}  {output_string2}  {output_string3}")
+
+root = tk.Tk()
+root.title("String Generator")
+
+input_label = tk.Label(root, text="Input String:")
+input_label.pack()
+
+input_entry = tk.Entry(root)
+input_entry.pack()
+
+generate_button = tk.Button(root, text="Generate", command=generate_output)
+generate_button.pack()
+
+output_label = tk.Label(root, text="")
+output_label.pack()
+
+root.mainloop()
