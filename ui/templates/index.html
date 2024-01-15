@@ -1,0 +1,34 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Herbal Tea Generator</title>
+    <link rel="stylesheet" href="static/style.css">
+<body>
+    <header>
+        <h1>道茶 (Chatea)</h1>
+        <p>Herbal Tea Generator by LLM</p>
+        <div class="session-info">
+            <span>使用次数 1220x, 用户每次使用价格: USD 1.01/次</span>
+        </div>
+    </header>
+    <main>
+        <section class="tea-generator">
+            <h2>TCM Herbal Tea Recommendation</h2>
+            <p>Enter your symptoms and get a tea recommendation.</p>
+            <form id="tea-form">
+                <label for="symptoms">Symptoms:</label>
+                <input type="text" id="symptoms" name="symptoms" required>
+                <button type="submit">Generate Tea</button>
+            </form>
+            <div id="result"></div>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; <span id="year"></span> Herbal Tea Generator. All rights reserved.</p>
+    </footer>
+    <script src="static/app.js"></script>
+</body>
+</html>
