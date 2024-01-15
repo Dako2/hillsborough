@@ -1,4 +1,4 @@
-datasets/
+dataset/
 .DS_Store
 
 *.json
