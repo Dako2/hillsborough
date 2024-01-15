@@ -1,4 +1,6 @@
-/datasets/*
+datasets/
+.DS_Store
+
 *.json
 *.jsonl
 *.csv
