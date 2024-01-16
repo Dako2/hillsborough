@@ -3,7 +3,8 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import logging
 import threading
-import requests 
+import requests
+import core
 
 app = Flask(__name__)
 app.logger.setLevel(logging.INFO)
@@ -47,22 +48,25 @@ def home():
 
 # Function to call the third-party API and fetch a recommendation
 def fetch_recommendation(symptoms_description):
+
+    # Make an API request to the third-party service
     try:
-        # Make an API request to the third-party service
-        
+        messages = core.recommend(symptoms_description)
+        recommendation = ""
+        for m in messages:
+            recommendation += f"{m.content[0].text.value}"
+    except:
         recommendation = "Recommendation not available at the moment."
-
-        # Update the database with the recommendation (if needed)
-        # You can add code here to save the recommendation to the database
-        # Store the recommendation in the shared variable
-        global shared_recommendation
-        shared_recommendation = recommendation
-
-        # Set the event to signal that the recommendation is available
-        recommendation_event.set()
-         
-    except Exception as e:
         app.logger.error(f"Error fetching recommendation: {e}")
+
+    # Update the database with the recommendation (if needed)
+    # You can add code here to save the recommendation to the database
+    # Store the recommendation in the shared variable
+    global shared_recommendation
+    shared_recommendation = recommendation
+
+    # Set the event to signal that the recommendation is available
+    recommendation_event.set()        
 
     
 @app.route('/submit', methods=['POST'])

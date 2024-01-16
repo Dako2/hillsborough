@@ -47,7 +47,6 @@ assistant = client.beta.assistants.update(
     TCM_ASSISTANT_ID,
     #tools=[{"type": "retrieval"}],
     )
-
 show_json(assistant)
 
 def recommend(symptom="我头晕眼花"):
@@ -61,16 +60,4 @@ def recommend(symptom="我头晕眼花"):
     for m in messages:
         print(f"{m.role}: {m.content[0].text.value}")
 
-    return f"{m.role}: {m.content[0].text.value}"
-
-
-symptom="我头晕眼花"
-thread, run = create_thread_and_run(
-        symptom
-    )
-run = wait_on_run(run, thread)
-messages = get_response(thread)
-pretty_print(messages)
-
-for m in messages:
-    print(f"{m.role}: {m.content[0].text.value}")
+    return messages
