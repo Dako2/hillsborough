@@ -4,6 +4,7 @@ from datetime import datetime
 import logging
 import threading
 import requests 
+from celery import Celery
 
 app = Flask(__name__)
 app.logger.setLevel(logging.INFO)
@@ -11,13 +12,78 @@ app.logger.setLevel(logging.INFO)
 # Configure the SQLAlchemy part
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///symptom.db'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///backup_symptom.db'
-
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-# Create an event to signal when the recommendation is available
-recommendation_event = threading.Event()
+# Configure Celery
+app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'
+app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379/0'
+celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
+celery.conf.update(app.config)
 
+def fetch_recommendation(symptoms_description):
+    # Create a new Symptom instance
+    new_symptom = Symptom(description=symptoms_description)
+    # Create a new BackupSymptom instance with the same data
+    backup_symptom = BackupSymptom(description=symptoms_description)
+    # Add and commit both instances to their respective databases
+    db.session.add(new_symptom)
+    db.session.add(backup_symptom)
+    db.session.commit()
+
+    try:
+        # Make an API request to the third-party service
+        response = requests.get('URL_TO_THIRD_PARTY_API', params={'symptoms': symptoms_description})
+
+        if response.status_code == 200:
+            recommendation = response.json().get('recommendation')
+        else:
+            recommendation = "Recommendation not available at the moment."
+
+        new_symptom.recommendation = recommendation
+        backup_symptom.recommendation = recommendation
+
+        return recommendation
+
+    except Exception as e:
+
+        recommendation = "bad api"
+        new_symptom.recommendation = recommendation
+        backup_symptom.recommendation = recommendation
+
+        return f"Error fetching recommendation: {str(e)}"
+
+# Function to call the third-party API and fetch a recommendation
+def fetch_recommendation2222(symptoms_description):
+    try:
+        # Make an API request to the third-party service
+        response = requests.get('URL_TO_THIRD_PARTY_API', params={'symptoms': symptoms_description})
+        # Create a new Symptom instance
+        new_symptom = Symptom(description=symptoms_description)
+        # Create a new BackupSymptom instance with the same data
+        backup_symptom = BackupSymptom(description=symptoms_description)
+
+        # Add and commit both instances to their respective databases
+        db.session.add(new_symptom)
+        db.session.add(backup_symptom)
+        db.session.commit()
+
+        if response.status_code == 200:
+            recommendation = response.json().get('recommendation')
+            new_symptom.recommendation = recommendation
+            backup_symptom.recommendation = recommendation
+        else:
+            recommendation = "Recommendation not available at the moment."
+            new_symptom.recommendation = recommendation
+            backup_symptom.recommendation = recommendation
+            
+        # Update the database with the recommendation (if needed)
+        # You can add code here to save the recommendation to the database
+
+        return recommendation
+
+    except Exception as e:
+        return str(e)
 
 class Symptom(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -45,26 +111,6 @@ with app.app_context():
 def home():
     return render_template('index.html')
 
-# Function to call the third-party API and fetch a recommendation
-def fetch_recommendation(symptoms_description):
-    try:
-        # Make an API request to the third-party service
-        
-        recommendation = "Recommendation not available at the moment."
-
-        # Update the database with the recommendation (if needed)
-        # You can add code here to save the recommendation to the database
-        # Store the recommendation in the shared variable
-        global shared_recommendation
-        shared_recommendation = recommendation
-
-        # Set the event to signal that the recommendation is available
-        recommendation_event.set()
-         
-    except Exception as e:
-        app.logger.error(f"Error fetching recommendation: {e}")
-
-    
 @app.route('/submit', methods=['POST'])
 def submit():
     try:
@@ -73,32 +119,15 @@ def submit():
         user_ip = request.remote_addr  # Get user's IP address
  
         app.logger.info(f"User IP: {user_ip}, Symptoms: {symptoms_description}")
-        # Create a new Symptom instance
-        new_symptom = Symptom(description=symptoms_description)
-        # Create a new BackupSymptom instance with the same data
-        backup_symptom = BackupSymptom(description=symptoms_description)
-        # Add and commit both instances to their respective databases
-        db.session.add(new_symptom)
-        db.session.add(backup_symptom)
 
         # Start a background thread to fetch the recommendation
-        recommendation_thread = threading.Thread(target=fetch_recommendation, args=(symptoms_description,))
-        recommendation_thread.start()
-        # Wait for the background thread to finish and get the recommendation
-        recommendation_thread.join()
+        #recommendation_thread = threading.Thread(target=fetch_recommendation, args=(symptoms_description,))
+        #recommendation_thread.start()
+        
+        # Enqueue the task to fetch the recommendation
+        task = fetch_recommendation.apply_async(args=[symptoms_description])
 
-        # Check if the event is set, indicating that the recommendation is available
-        if recommendation_event.is_set():
-            recommendation = shared_recommendation
-        else:
-            recommendation = "Recommendation not available at the moment."
-
-        new_symptom.recommendation = recommendation
-        backup_symptom.recommendation = recommendation
-
-        db.session.commit()
-
-        return jsonify(description=symptoms_description, recommendation=recommendation)
+        return jsonify(description=symptoms_description, recommendation="Fetching recommendation...")
     
     except Exception as e:
         app.logger.error(f"Error in /submit: {e}")

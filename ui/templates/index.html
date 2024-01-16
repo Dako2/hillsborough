@@ -8,26 +8,40 @@
     <link rel="stylesheet" href="static/style.css">
 <body>
     <header>
-        <h1>道茶 (Chatea)</h1>
-        <p>Herbal Tea Generator by LLM</p>
+        <h1>道茶 (Chatea) - Demo</h1>
+        <p>Herbal Tea Generator by LLM</p> 
         <div class="session-info">
-            <span>使用次数 1220x, 用户每次使用价格: USD 1.01/次</span>
+            <span>使用次数 <span id="usage-count">1220x</span> 运算成本 USD 1.01/次 剩余资金 USD 120 模型准确率 50%</span> 
         </div>
     </header>
     <main>
         <section class="tea-generator">
-            <h2>TCM Herbal Tea Recommendation</h2>
-            <p>Enter your symptoms and get a tea recommendation.</p>
+            <!--<h2>TCM Herbal Tea Recommendation</h2>-->
+            <h2>传统中医诊断，推荐中草药茶。</h2>
+            <!--<p>Enter your symptoms and get a tea recommendation. Please don't enter any personal information (privacy policy)</p>-->
             <form id="tea-form">
-                <label for="symptoms">Symptoms:</label>
+                <label for="symptoms">输入您的症状（请勿提交具体个人信息，如姓名、生日、身份证号等）:</label>
                 <input type="text" id="symptoms" name="symptoms" required>
-                <button type="submit">Generate Tea</button>
+                <button type="submit">提交 (Generate Tea)</button>
+                <h2>使用结果</h2>
+                <div id="result">
+                    <p id="result-summary">Your summary or message here</p>
+                    <ul id="result-list">
+                        <!-- Example of a list item with buttons -->
+                        <li>
+                            <span class="entry-content">[Timestamp] Description | Recommendation</span>
+                            <div class="button-container">
+                                <!-- Buttons here -->
+                            </div>
+                        </li>
+                        <!-- More list items -->
+                    </ul>
+                </div>
             </form>
-            <div id="result"></div>
         </section>
     </main>
     <footer>
-        <p>&copy; <span id="year"></span> Herbal Tea Generator. All rights reserved.</p>
+        <p>&copy; <span id="year"></span> **本项以试验AI模型能力为目的，并非提供实际医疗用途** Herbal Tea Generator. All rights reserved.</p>
     </footer>
     <script src="static/app.js"></script>
 </body>

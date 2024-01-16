@@ -99,3 +99,50 @@ footer {
         width: calc(100% - 16px); /* Adjust width for mobile viewing */
     }
 }
+
+#result-list {
+    list-style: none; /* Removes default list bullets */
+    padding-left: 0; /* Aligns content to the left */
+}
+
+#result-list li {
+    background-color: #f9f9f9; /* Light grey background */
+    border-bottom: 1px solid #e1e1e1; /* Adds a border to the bottom of each item */
+    padding: 10px; /* Adds space inside each list item */
+    margin-bottom: 5px; /* Adds space between list items */
+    font-family: Arial, sans-serif; /* Changes the font */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Container for buttons */
+.button-container {
+    display: flex;
+    flex-direction: column; /* Stack buttons vertically */
+    align-items: flex-end; /* Align buttons to the right */
+    margin-top: 10px; /* Add space between content and buttons */
+}
+
+/* Adjust button size */
+.thumb-up,
+.thumb-down,
+.delete {
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: 6px;
+    padding: 5px;
+}
+
+/* Hover effects */
+.thumb-up:hover,
+.thumb-down:hover,
+.delete:hover {
+    opacity: 0.7;
+}
+/* 
+.delete {
+    display: none;
+} */
