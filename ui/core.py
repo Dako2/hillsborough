@@ -2,8 +2,17 @@ from openai import OpenAI
 import json
 import time
 
+def show_json(obj):
+    print(json.loads(obj.model_dump_json()))
+
 TCM_ASSISTANT_ID = 'asst_FjBZXd9Zjgocx710JqH0Q6Kr'
 client = OpenAI()
+ 
+assistant = client.beta.assistants.update(
+    TCM_ASSISTANT_ID,
+    tools=[{"type": "retrieval"}],
+    )
+show_json(assistant)
 
 # Pretty printing helper
 def pretty_print(messages):
@@ -30,7 +39,6 @@ def submit_message(assistant_id, thread, user_message):
         assistant_id=assistant_id,
     )
 
-
 def get_response(thread):
     return client.beta.threads.messages.list(thread_id=thread.id, order="asc")
 
@@ -39,17 +47,7 @@ def create_thread_and_run(user_input):
     run = submit_message(TCM_ASSISTANT_ID, thread, user_input)
     return thread, run
 
-def show_json(obj):
-    print(json.loads(obj.model_dump_json()))
-
- 
-assistant = client.beta.assistants.update(
-    TCM_ASSISTANT_ID,
-    #tools=[{"type": "retrieval"}],
-    )
-show_json(assistant)
-
-def recommend(symptom="我头晕眼花"):
+def recommend(symptom):
     thread, run = create_thread_and_run(
         symptom
     )
