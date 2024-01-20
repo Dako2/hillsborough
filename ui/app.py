@@ -5,6 +5,9 @@ import logging
 import threading
 import requests
 import core
+import chatea_korok
+
+korok = chatea_korok.Korok(threshold=0.6)
 
 app = Flask(__name__)
 app.logger.setLevel(logging.INFO)
@@ -51,13 +54,14 @@ def fetch_recommendation(symptoms_description):
 
     # Make an API request to the third-party service
     try:
-        messages = core.recommend(symptoms_description)
-        recommendation = ""
-        for m in messages:
-            recommendation += f"{m.content[0].text.value}"
+        #messages = core.recommend(symptoms_description)
+        recommendation = korok.chat_api_v2(symptoms_description)
+        print(recommendation)
+        #recommendation = ""
+        #for m in messages:
+        #    recommendation += f"{m.content[0].text.value}"
     except:
         recommendation = "Recommendation not available at the moment."
-        app.logger.error(f"Error fetching recommendation: {e}")
 
     # Update the database with the recommendation (if needed)
     # You can add code here to save the recommendation to the database

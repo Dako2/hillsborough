@@ -39,8 +39,6 @@ text_splitter = RecursiveCharacterTextSplitter(chunk_size=2000, chunk_overlap=0)
 all_splits = text_splitter.split_documents(data)
 
 # Add to vectorDB
-
-
 embeddings = TogetherEmbeddings(model="togethercomputer/m2-bert-80M-8k-retrieval")
 
 vectorstore = Chroma.from_documents(
@@ -49,6 +47,7 @@ vectorstore = Chroma.from_documents(
     embedding=TogetherEmbeddings(model="togethercomputer/m2-bert-80M-8k-retrieval"),
 )
 vectordb = Chroma(persist_directory="", embedding_function=embeddings)
+
 import chromadb
 #client = chromadb.PersistentClient(path="./tea.db")
 
@@ -83,8 +82,6 @@ chain = (
 )
 
 while True:
-
-
     system_content = "You are a traidtional Chinese medicine doctor. you analyze the patient's symptoms and recommend a treatement and a herbal tea"
     user_content = "最近我老是贪睡得病感冒，有什么茶推荐吗？"
     # wirte a python code to get input from user
@@ -119,7 +116,8 @@ while True:
 
     # Finetuned model 
     stream = client.chat.completions.create(
-        model="willwuwork@gmail.com/Mistral-7B-Instruct-v0.2-2024-01-13-23-14-34",
+        #model="willwuwork@gmail.com/Mistral-7B-Instruct-v0.2-2024-01-13-23-14-34",
+        model = "togethercomputer/Mistral-7B-Instruct-v0.2-ft-5de63221-fa9b-4b6e-aeb1-7101611945ec",
         messages=[
             {"role": "system", "content": system_content},
             {"role": "user", "content": user_content},
@@ -137,3 +135,6 @@ while True:
 
     print("\n----Finetuned model with RAG----\n")
     print(response)
+
+
+
