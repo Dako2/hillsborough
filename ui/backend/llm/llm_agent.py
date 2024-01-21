@@ -1,11 +1,13 @@
 ﻿# -*- coding: utf-8 -*-
 import openai
 import os 
+from dotenv import load_dotenv
+load_dotenv()
 
 class Conversation:
     def __init__(self, system_prompt):
         
-        self.client = openai.OpenAI(api_key = os.environ.get("OPENAI_API_KEY"),) 
+        self.client = openai.OpenAI(api_key = os.getenv("OPENAI_API_KEY"),) 
         self.messages = [
             {'role': 'system', 'content': system_prompt},
             ]

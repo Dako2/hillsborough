@@ -1,4 +1,4 @@
 not_upload/
 .DS_Store
-
+.env
 *.pyc
