@@ -2,7 +2,3 @@ not_upload/
 .DS_Store
 
 *.pyc
-*.json
-*.jsonl
-*.csv
-
