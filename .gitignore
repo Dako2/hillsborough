@@ -1,6 +1,4 @@
-datasets/
 not_upload/
-
 .DS_Store
 
 *.pyc
